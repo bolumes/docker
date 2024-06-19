@@ -12,10 +12,9 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 2
+      replicas: 2  # Definindo 2 réplicas para o serviço webapp
       placement:
-        constraints:
-          - node.role == worker  # Restrição para nós do tipo worker
+        constraints: [node.role == worker]
 
   websocket:
     build:
@@ -26,10 +25,9 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 3
+      replicas: 3  # Definindo 3 réplicas para o serviço websocket
       placement:
-        constraints:
-          - node.role == worker  # Restrição para nós do tipo worker
+        constraints: [node.role == worker]
 
   db:
     image: postgres:13
@@ -44,10 +42,9 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 1
+      replicas: 1  # Apenas uma instância do banco de dados é geralmente suficiente
       placement:
-        constraints:
-          - node.role == manager  # Restrição para nós do tipo manager
+        constraints: [node.role == worker]
 
   visualizer:
     image: dockersamples/visualizer:latest
@@ -58,10 +55,9 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 1
+      replicas: 1  # Apenas uma instância do visualizer é necessária
       placement:
-        constraints:
-          - node.role == manager  # Restrição para nós do tipo manager
+        constraints: [node.role == manager]
 
 networks:
   app-network:
