@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  webapp:
+    build:
+      context: ./webapp
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./webapp:/var/www/html
+    networks:
+      - app-network
+    deploy:
+      replicas: 2  # Definindo 2 réplicas para o serviço webapp
+
+  websocket:
+    build:
+      context: ./websocket
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    deploy:
+      replicas: 3  # Definindo 3 réplicas para o serviço websocket
+
+  db:
+    image: postgres:13
+    environment:
+    POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: my_database
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    deploy:
+      replicas: 1  # Geralmente, um único banco de dados não é replicado; use replicação interna do PostgreSQL se necessário
+
+  visualizer:
+    image: dockersamples/visualizer:latest
+    ports:
+      - "8088:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+    deploy:
+      replicas: 1  # Normalmente, apenas uma instância do visualizador é necessária para monitoramento
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
